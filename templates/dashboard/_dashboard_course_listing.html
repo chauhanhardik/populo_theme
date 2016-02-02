@@ -171,7 +171,7 @@ data-description="${get_course_about_section(request,course, 'description').lowe
   <article class="tile">  
    <% 
    ## course_target = reverse('courseware', args=[unicode(course_overview.id)]) 
-   course_target = reverse('info', args=[unicode(course_overview.id)]) 
+   course_target = reverse('courseware', args=[unicode(course_overview.id)]) 
    %>
       <section class="tile-header">
             <div class="course-title">${title_limit(course_overview.display_name_with_default, 30)}</div>

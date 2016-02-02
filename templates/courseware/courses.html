@@ -71,6 +71,8 @@
        }
        console.log('courseRegistry: ',courseRegistry);
 
+      $()
+
     });
 
   /** SEARCH CONFIGURATION **/
@@ -248,8 +250,8 @@
                       <span class="form-control-feedback"><img src="/static/themes/edx-theme/images/search-icon.png">Search</span>
                       <input id="dash-Search" type="text" class="form-control" aria-label="...">
                       <div class="input-group-btn">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="" id="setCatText">ALL</span> <span class="caret"></span></button>
-                        <ul class="dropdown-menu dropdown-menu-right">
+                        <button id="ddl_cat_list" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="" id="setCatText">ALL</span> <span class="caret"></span></button>
+                        <ul id="ddl_cat" class="dropdown-menu dropdown-menu-right">
                           <li><a onclick="setCat('all')">ALL</a></li>
                           <li><a onclick="setCat('author')">AUTHOR</a></li>
                           <li><a onclick="setCat('category')">CATEGORY</a></li>
@@ -263,20 +265,28 @@
     </div>
 
   <div class="row">
-      <div class="col-md-12 margin-top">
+      <div class="col-md-12 margin-top pad_bottom">
           <ul id="courseSearch" class="list-inline">
             %for course in courses:
               <%include file="../course.html" args="course=course" />
             %endfor
           </ul>
-
-
       </div>
   </div>
-      % if course_discovery_enabled:
-    <aside aria-label="${_('Refine your search')}" class="search-facets phone-menu">
-    </aside>
-    % endif
-
-
 </div>
+<script type="text/javascript">
+  $(document).ready(function(){
+
+    $("#ddl_cat_list").click(function(event){
+      if($(this).parent().hasClass("open")){
+        $(this).parent().removeClass("open");
+      }else{
+        $(this).parent().addClass("open");
+      }
+    });
+
+    $("#ddl_cat li a").click(function(){
+      $(this).closest('.input-group-btn').removeClass('open');
+    });
+  });
+</script>

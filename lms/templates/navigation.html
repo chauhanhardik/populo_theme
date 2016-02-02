@@ -1,0 +1,208 @@
+## mako
+<%namespace name='static' file='static_content.html'/>
+<%namespace file='main.html' import="login_query, stanford_theme_enabled"/>
+<%!
+from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
+
+from microsite_configuration import microsite
+from microsite_configuration.templatetags.microsite import platform_name
+from lms.djangoapps.ccx.overrides import get_current_ccx
+from student.roles import (
+    GlobalStaff
+)
+# App that handles subdomain specific branding
+from branding import api as branding
+# app that handles site status messages
+from status.status import get_site_status_msg
+
+def justIp(dns):
+    sl1 = dns.find('ec2-', 0)
+    sl2 = dns.find(':18010', sl1+1)
+    ipprint=dns[sl1+4:sl2]
+    sl3=ipprint.find('.eu-west')
+    ipprint=ipprint[0:sl3]
+    ipprint = ipprint.replace("-", ".")
+    ipprint = 'http://'+ipprint
+
+    return ipprint
+%>
+
+## Provide a hook for themes to inject branding on top.
+<%block name="navigation_top" />
+
+<%block>
+<%
+try:
+    course_id = course.id
+except:
+    # can't figure out a better way to get at a possibly-defined course var
+    course_id = None
+site_status_msg = get_site_status_msg(course_id)
+%>
+% if site_status_msg:
+<div class="site-status">
+  <div class="inner-wrapper">
+    <span class="white-error-icon"></span>
+    <p>${site_status_msg}</p>
+  </div>
+</div>
+% endif
+</%block>
+
+  
+
+<%
+PLACEHOLDER_USERNAME = '__PLACEHOLDER_USERNAME'
+## !
+%>
+
+<script type="text/javascript">
+$(function() {
+    var username2 = "${user.username}";
+    //console.log("Username is: ", "${user.username}");
+    var form = $(".manage-accounts-form"),
+        profileUrl = "${reverse('accounts_api', kwargs={'username': PLACEHOLDER_USERNAME})}",
+        menuProfile;
+        //console.log("Auth Headers: ",profileUrl);
+        var ajaxCalled = $.ajax({
+            type: "GET",
+            url: profileUrl.replace('${PLACEHOLDER_USERNAME}', username2),
+            success: function(response) {
+                var imageUrl = response["profile_image"]["image_url_medium"];
+                
+                console.log('Image Url response: ', imageUrl);
+            }
+        });
+        //console.log('AJAX: ', ajaxCalled);
+
+    menuProfile = function(username) {
+        return $.ajax({
+            type: "GET",
+            url: profileUrl.replace('${PLACEHOLDER_USERNAME}', username2),
+            success: function(response) {
+                var imageUrl = response["profile_image"]["image_url_medium"];
+             
+                console.log('Image Url response: ', imageUrl);
+                $('#imageMain').attr("src", imageUrl);
+            }
+        });
+    };
+    
+    menuProfile(username2);
+
+    
+});
+
+
+
+$(document).ready(function () {
+  //console.log('Document Ready started')
+  // define variables for code legibility
+    var dropdownMenuToggle2 = $('header#mainMenu a#menuD');
+    var dropdownMenu2 = $('header#mainMenu ul#menuD-wrapper');
+    var userMenuToggle = $('a#profile-menu');
+    var userDropDown = $('ul#profileD-wrapper');
+    var menuItems2 = dropdownMenu2.find('a');
+
+  $(document.body).on("click",'header#mainMenu a#profile-menu', function() {
+    //console.log('User clicked', $(this));
+    //console.log('user userDropDown');
+    userDropDown.toggle();
+  //  userDropDown.toggleClass("is-shown");
+
+  });  
+  $(document.body).on("click",'header#mainMenu a#menuD', function() {
+    //console.log('Menu clicked', $(this));
+    //console.log('Menu dropdownMenuToggle2');
+      dropdownMenu2.toggle();
+  //  dropdownMenu2.toggleClass("expanded");
+  //  dropdownMenuToggle2.toggleClass("active");
+  });
+  if ( event.which == 32) {
+      
+      event.preventDefault();
+  } 
+});
+
+</script>
+% if user.is_authenticated():
+<header class="navbar navbar-default navbar-fixed-top global" id="mainMenu">
+  <div class="col-md-12 nav-dd ui-right">
+
+    <div class="btn-group col-xs-3" style="padding-left: 0px;">
+      <nav class="hidden-xs" style="padding-top: 11px;">
+        <a id="menuD" href="#" class="header-icon tip higher">
+       
+          <img src="/static/themes/edx-theme/images/menu-icon.png" style="">
+        </a>
+        <ul id="menuD-wrapper" class="dropdown-menu menuD">
+            <li>
+                <a href="/" >
+                <img src="/static/themes/edx-theme/images/dashboard-icon-blue.svg" width="35" height="35" />My Dashboard
+                </a>
+            </li> 
+            <li>
+                <a href="${marketing_link('COURSES')}">
+                <img src="/static/themes/edx-theme/images/search-courses-blue-icon.svg" width="35" height="35" />Search Activities
+                </a>
+            </li> 
+            % if GlobalStaff().has_user(user):
+            <li>
+                <a href="${justIp(("{cms_base}").format(cms_base=settings.CMS_BASE))}:18010/home">
+                <img src="/static/themes/edx-theme/images/designer-icon-blue.svg" width="35" height="35" />${_("Activity Designer").format(platform_name=settings.PLATFORM_NAME)}
+                </a>
+            </li>      
+            % endif                    
+        </ul>
+ 
+      </nav>
+    </div>
+    <div class="btn-group profile-wrapper pull-right">
+        <nav class="hidden-xs pull-right" style="padding-top: 0px;">
+          <a id="profile-menu" style="display:table;" class="tip higher">
+            <div class="tile-avatar">
+              <img id="imageMain" src="http://54.229.116.227/static/images/default-theme/default-profile_50.5fb006f96a15.png" />
+    
+            </div>
+            <div id="userMenu">
+              <img src="/static/themes/edx-theme/images/dropdown-dots.png" />
+            </div>  
+          </a>
+          <ul id="profileD-wrapper" class="dropdown-menu menuD" aria-labelledby="profile-menu">
+            <li>
+              <a href="${reverse('account_settings')}">
+                <img src="/static/themes/edx-theme/images/settings-blue-icon.svg" width="35" height="35"> ${_("Settings")}
+              </a>
+            </li> 
+            <li>
+              <a href="${reverse('learner_profile', kwargs={'username': user.username})}">
+                <img src="/static/themes/edx-theme/images/my-profile-blue-icon.svg" width="35" height="35"> ${_("My Profile")}
+              </a>
+            </li> 
+            <li>
+              <a href="${reverse('logout')}" role="menuitem">
+                <img src="/static/themes/edx-theme/images/logout-blue-icon.svg" width="35"   height="35"> ${_("Logout")}
+              </a>
+            </li>                          
+          </ul>
+        </nav>    
+    </div> 
+
+     
+     <a class="header-icon pull-right tip higher" href="#"><span>Notifications and activities</span><img src="/static/themes/edx-theme/images/notification-icon.png"></a>
+     <a class="header-icon pull-right tip higher" href="#"><span>Messages</span><img src="/static/themes/edx-theme/images/message-icon.png">
+     </a>
+  </div>
+</header>
+% endif
+
+
+
+% if course:
+<!--[if lte IE 9]>
+<div class="ie-banner" aria-hidden="true">${_('<strong>Warning:</strong> Your browser is not fully supported. We strongly recommend using {chrome_link} or {ff_link}.').format(chrome_link='<a href="https://www.google.com/chrome" target="_blank">Chrome</a>', ff_link='<a href="http://www.mozilla.org/firefox" target="_blank">Firefox</a>')}</div>
+<![endif]-->
+% endif
+
+<%include file="help_modal.html"/>

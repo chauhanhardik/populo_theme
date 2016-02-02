@@ -1,0 +1,22 @@
+body{
+	padding-top: 52px;
+}
+
+body,
+.view-login,
+.view-register,
+.view-passwordreset {
+    background-color: @color-background;
+
+    @import 'header.less';
+    @import 'modal.less';
+    @import 'footer.less';
+}
+body.logging{
+	#content{
+		padding-bottom: 0px;
+	}
+	.login-register .form-wrapper form{
+		border: none;
+	}
+}

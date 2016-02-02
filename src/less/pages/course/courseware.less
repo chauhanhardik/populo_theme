@@ -1,0 +1,598 @@
+body.view-courseware{
+    .content-wrapper{
+        .wrapper-course-material{
+            .course-tabs{
+                li{
+                    float: left;
+                    list-style: none;
+                    margin: 0 0.5em 0 0;
+                    a{
+                        color: inherit;
+                        font-weight: 200;
+                        border-radius: 4px;
+                        padding: 8px 12px;
+                        display: block;
+                        text-align: center;
+                        font-size: 14px;
+                        text-decoration: none;
+                        i{
+                            color: #598FD8;
+                        }
+                    }
+                }
+            }
+            ol.course-tracker{
+                background-color: @white;
+                li{
+                    a{
+                        font-size: 21px;
+                        i{
+                            color:#598FD8;
+                        }
+                    }
+                }
+            }
+            .course-tabs2{
+                li{
+                    float: left;
+                    list-style: none;
+                    margin: 0 0.5em 0 0;
+                    a{
+                        font: inherit;
+                        color: inherit;
+                        font-weight: 200;
+                        border-radius: 4px;
+                        padding: 8px 12px;
+                        display: block;
+                        text-align: center;
+                        font-size: 14px;
+                        text-decoration: none;
+                    }
+                }
+
+            }
+        }
+    }
+}
+body.view-incourse{
+    .content-wrapper{
+        .container {
+
+            .course-wrapper {
+                background-color: transparent;
+                max-width: 100% !important;
+                .course-index{
+
+                }
+                .course-content{
+                    > div.xblock{
+                        box-shadow: 0 1px 3px rgba(0,0,0,.3);
+                    }
+                    .sequence-nav{
+                        button{
+                            background: none;
+                            border: 2px solid transparent;
+                            box-shadow: none;
+                            height: 44px;
+                            overflow: hidden;
+                            text-shadow: none;
+                            transition: none;
+                            color: @color-secondary;
+                            background: none;
+                            -webkit-transition: all 0.2s cubic-bezier(0.455, 0.03, 0.515, 0.955) 0s;
+                            -moz-transition: all 0.2s cubic-bezier(0.455, 0.03, 0.515, 0.955) 0s;
+                            transition: all 0.2s cubic-bezier(0.455, 0.03, 0.515, 0.955) 0s;
+                            position: absolute;
+                            display: block;
+                            top: 0;
+                            width: 40px;
+                            height: 46px;
+                            padding: 0;
+                        }
+                        .button.disabled{
+                            opacity: 0;
+                        }
+                        ol{
+                            li#icon-holder{
+                                a{
+                                    background-color: transparent;
+                                }
+                            }
+                        }
+                    }
+                }
+                .course-index {
+                    #accordion {
+                        .chapter {
+                            ul{
+                                li{
+                                    a{
+                                        color: #796C6C;
+                                    }
+                                }
+                            }
+                            h3.active {
+                                a{
+                                    color: #0078b0;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        }
+    } 
+.course-wrapper {
+    .size(98%, auto);
+
+    padding: 0;
+    background-color: transparent;
+
+    .course-index {
+        h3.active {
+
+        }
+        .square(100%);
+        .make-md-column(3);
+        .make-lg-column(3);
+
+        padding: 0;
+        display: block;
+        font: inherit;
+        background: none;
+        border-radius: 0;
+        border: 0 none;
+        transition: none;
+        box-sizing: border-box;
+        border-right: 1px solid @color-border;
+
+        @media (max-width: @screen-sm-max) {
+            border-right: none;
+            border-bottom: 2px solid @color-border;
+        }
+
+        #courseware-search-bar {
+            display: none;
+        }
+
+        #accordion {
+            font: inherit;
+            box-shadow: 0 1px 3px rgba(0,0,0,.3);
+            nav{
+                min-height: 600px;
+                background-color: white;
+                h2.course-header{
+                    margin: 0 0 0 0;
+                    padding: 10px;
+                    color: @gray2;
+                    font-weight: 200;
+                    line-height: 26px;
+                    span{
+                        font-weight: bold;
+                    }
+                }
+            }
+
+            .chapter {
+                border-radius: 0;
+                background-image: none;
+                background-color: white;
+                box-shadow: none;
+                border-bottom: 1px solid @color-border;
+                padding: 0;
+
+                &:last-child {
+                    border: 0 none;
+                }
+
+                &.is-open {
+                    font-weight: @headings-font-weight;
+                }
+
+                h3 {
+                    font: inherit;
+                    padding: 0.6em 1.3em 0.6em 0.8em;
+
+                    .ui-accordion-header-icon {
+                        right: 0.6em;
+                        left: ~"initial";
+                        border: 2px solid #545252;
+                        border-radius: 10px;
+                        
+                    }
+                    span.ui-icon-triangle-1-e{
+                        background-position: -18px -131px;
+                    }
+                    span.ui-icon-triangle-1-s{
+                        background-position: -50px -131px;
+                    }
+
+                    a {
+                        color: @gray2;
+                        font-weight: bold;
+                        font-size: .9em;
+
+                        &:hover {
+                            text-decoration: none;
+                        }
+                    }
+                }
+
+                ul {
+                    font: inherit;
+                    font-weight: 500;
+                    background: none;
+                    background-color: @white;
+                    padding: 0.6em;
+
+                    li {
+                        margin: 0 0 0.6em 0;
+                        color: #796C6C;
+                        border-style: solid;
+                        border-color: @white;
+                        border-radius: 4px;
+                        border-width: 1px;
+                        &:last-child {
+                            margin: 0;
+                        }
+                        &:hover{
+                            border-color: @color-secondary;
+                            color: @color-secondary;
+                        }
+
+                        a {
+                            font: inherit;
+                            color: @gray2;
+                            background: none;
+                            padding: 0.83em 0.5em 0.83em 1em;
+                            border-radius: @default-border-radius;
+                            border: 1px solid transparent;
+                            box-shadow: none;
+
+                            &:hover {
+                                border-color: @color-border;
+                            }
+
+                            p {
+                                font: inherit;
+                                color: inherit;
+                                padding-left: 40px;
+
+                                &.subtitle {
+                                    color: #504848;
+                                    padding-left: 0px;
+                                    margin-left: 40px;
+                                    margin-top: 6px;
+                                    font-size: 12px;
+                                    width: 65%;
+                                }
+                            }
+                        }
+
+                        &.graded {
+                            a:after {
+                                content: '\f017';
+                                font-family: 'FontAwesome';
+                                font-size: 1.2em;
+                                position: absolute;
+                                right: 1.8em;
+                                bottom: 0.6em;
+                                color: #2D88CE;
+                            }
+
+                            img {
+                                display: none;
+                            }
+                        }
+
+                        &.active {
+                            font: inherit;
+
+                            a {
+                                border-color: @color-primary;
+                                background-color: @gray0;
+                                color: #000000;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .course-content {
+        .square(100%);
+        .make-md-column(9);
+        .make-lg-column(9);
+
+        font: inherit;
+        background-color: transparent;
+        display: block;
+        margin: 0 0 0 -1px;
+        padding: 0px 0px 0px 30px;
+
+        border-left: 1px solid @color-border;
+
+        @media (max-width: @screen-xs-max) {
+            padding: 10px;
+        }
+
+        @import 'xblock.less';
+
+        .sequence-nav {
+            margin: 0;
+            border: 0 none;
+            height: 46px;
+            background-color: #F7F7F7;
+            position: relative;
+            width: ~"calc(100% + 20px)";
+            left: -10px;
+            top: -30px;
+            z-index: 10;
+
+            button {
+                background: none;
+                border: 2px solid @color-border;
+                box-shadow: none;
+                height: 44px;
+                overflow: hidden;
+                text-shadow: none;
+                transition: none;
+                position: absolute;
+
+                &.disabled {
+                    background-color: fade(@color-disabled, 25%);
+                    opacity: 1;
+
+                    .icon {
+                        opacity: 0.5;
+                    }
+                }
+            }
+            button.button-previous{
+                right: 40px;
+                position: absolute;
+                left: initial;
+                 span.sr{
+                    display: none;
+                 }
+                 span{
+                    background-color: @gray2;
+                    border-radius: 30px;
+                    width: 32px;
+                    height: 32px;
+                    top: 2px;
+                    color: white;
+                    position: relative;
+                    &:before{
+                        top: 9px;
+                        position: absolute;
+                        left: 10px;
+                    }
+                }
+            }
+            button.button-next{
+                right: 0px;
+                position: absolute;
+                span.sr{
+                    display: none;
+                 }
+                span{
+                    background-color: @gray2;
+                    border-radius: 30px;
+                    width: 32px;
+                    height: 32px;
+                    top: 2px;
+                    color: white;
+                    position: relative;
+                    &:before{
+                        top: 9px;
+                        position: absolute;
+                        left: 12px;
+                    }
+                }
+            }
+            ol{
+                li#icon-holder{
+                    h3{
+                        margin-top: 14px;
+                        margin-left: 9px;
+                        float: left;
+                        font-size: 15px;
+                        font-weight: 600;
+                        color: @black;
+                    }
+
+                    a{
+                        background-color: @color-secondary;
+                        width: 30px;
+                        height: 30px;
+                        border-radius: 30px;
+                        margin-left: auto;
+                        margin-right: auto;
+                        position: relative;
+                        top: 8px;
+                        float: left;
+                        color: white;
+                        i{
+                        color: @white;
+                        font-weight: bold;
+                        font-size: 16px;
+                        line-height: 28px;
+                        margin-left: 2px;
+                    }
+                    }
+                    
+                }
+            }
+            .sequence-list-wrapper {
+                background: none;
+                box-shadow: none;
+                border: 0 none;
+                margin: 0 38px;
+                padding: 0;
+
+                .left-shadow, .right-shadow {
+                    display: none;
+                }
+                
+                ol#sequence-list{
+                    display: none;
+                }
+                ol {
+                    padding: 0;
+
+                    li {
+                        min-width: 0;
+
+                        &:first-child a {
+                            border-left: 2px solid @color-border;
+                        }
+
+                        &:last-child a {
+                            border-right: 2px solid @color-border;
+                        }
+
+                        a {
+                            .size(auto, 44px);
+
+                            text-align: center;
+                            background: none;
+                            border: 0 none;
+                            box-shadow: none;
+                            color: @black;
+                            border-top: 2px solid @color-border;
+                            border-bottom: 2px solid @color-border;
+
+                            @media (max-width: @screen-sm-max) {
+                                display: none;
+                            }
+
+                            &.active {
+                                border-color: @color-primary;
+                                color: @color-secondary;
+
+                                @media (max-width: @screen-sm-max) {
+                                    display: block;
+                                    border: 2px solid @color-primary;
+                                }
+
+                                &.progress-none {
+                                    border-color: @color-primary;
+                                    color: @color-primary;
+                                }
+
+                                &.progress-some {
+                                    border-color: @color-warning;
+                                    color: @color-warning;
+                                }
+
+                                &.progress-in_progress {
+                                    border-color: @color-warning;
+                                    color: @color-warning;
+                                }
+
+                                &.progress-done {
+                                    border-color: @color-success;
+                                    color: @color-success;
+                                }
+                            }
+
+                            &.inactive, &.visited {
+                                &.progress-none, &.progress-0 {
+                                    background-color: @color-border;
+
+                                    &:hover {
+                                        background: @white;
+                                        color: @color-border;
+                                    }
+                                }
+
+                                &.progress-some, &.progress-in_progress {
+                                    background-color: @color-warning;
+                                    border-color: @color-warning;
+
+                                    &:hover {
+                                        background-color: @white;
+                                        color: @color-warning;
+                                    }
+                                }
+
+                                &.progress-done {
+                                    background-color: @color-success;
+                                    border-color: @color-success;
+
+                                    &:hover {
+                                        background-color: @white;
+                                        color: @color-success;
+                                    }
+                                }
+                            }
+
+                            &:hover {
+                                text-decoration: none;
+                            }
+
+                            &:after {
+                                font: inherit;
+                                color: inherit;
+                                content: '\f040';
+                                font-family: 'FontAwesome';
+                                font-size: 1.2em;
+                                display: block;
+                                margin: 8px auto 0;
+                                padding: 0
+                            }
+
+                            &.seq_video:after {
+                                content: '\f03d';
+                            }
+
+                            &.seq_problem:after {
+                                content: '\f040';
+                            }
+
+                            .icon {
+                                display: none;
+                            }
+
+                            > p {
+                                display: none;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        h2 {
+            margin-top: 0
+        }
+
+        .sequence-bottom {
+            .button-previous {
+                margin: 0 1px;
+            }
+
+            .button-previous, .button-next {
+                background: none;
+                box-shadow: none;
+                display: inline-block;
+                border: 2px solid @color-border;
+                overflow: hidden;
+                transition: none;
+
+                &.disabled {
+                    
+                    opacity: 1;
+
+                    .icon {
+                        opacity: 0.5;
+                    }
+                }
+            }
+        }
+    }
+}

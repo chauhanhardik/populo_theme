@@ -111,28 +111,20 @@ $(function() {
 
 
 $(document).ready(function () {
-  //console.log('Document Ready started')
-  // define variables for code legibility
-    var dropdownMenuToggle2 = $('header#mainMenu a#menuD');
-    var dropdownMenu2 = $('header#mainMenu ul#menuD-wrapper');
-    var userMenuToggle = $('a#profile-menu');
-    var userDropDown = $('ul#profileD-wrapper');
-    var menuItems2 = dropdownMenu2.find('a');
-
-  $(document.body).on("click",'header#mainMenu a#profile-menu', function() {
-    //console.log('User clicked', $(this));
-    //console.log('user userDropDown');
-    userDropDown.toggle();
-  //  userDropDown.toggleClass("is-shown");
-
-  });  
-  $(document.body).on("click",'header#mainMenu a#menuD', function() {
-    //console.log('Menu clicked', $(this));
-    //console.log('Menu dropdownMenuToggle2');
-      dropdownMenu2.toggle();
-  //  dropdownMenu2.toggleClass("expanded");
-  //  dropdownMenuToggle2.toggleClass("active");
+  // Due to confliction rewrite this for navigation ddl in header
+  $("#menuD, #profile-menu").click(function(e){
+    e.stopImmediatePropagation();
+    e.preventDefault();
+    if (e.target.closest("a").id == "menuD"){
+      $("#profileD-wrapper").hide(); 
+      $("#menuD-wrapper").toggle();
+    }
+    if(e.target.closest("a").id == "profile-menu"){
+      $("#menuD-wrapper").hide();
+      $("#profileD-wrapper").toggle(); 
+    }
   });
+
   if ( event.which == 32) {
       
       event.preventDefault();

@@ -74,7 +74,6 @@ import json
             if(document.images[i].className == "img-responsive course-image-main"){
                 if (!isImageOk(document.images[i])) {
                     document.images[i].src = "/static/themes/edx-theme/images/course2.png";
-                    console.log('Course with default image: ',  document.images[i].alt);
                     //document.images[i].style.visibility = "hidden";
                 }
             } 
@@ -116,9 +115,7 @@ import json
           requirements: registryElements[i].attributes['data-requirements'].nodeValue.toLowerCase()
         }
         courseRegistry.push(regObject);
-        console.log('List courses: ',registryElements[i].attributes);
        }
-       console.log('courseRegistry: ',courseRegistry);
 
     });
 
@@ -131,19 +128,14 @@ import json
         for(l=0; l<objectList.length; l++)
           {
             $('#'+objectList[l].id).show();
-            console.log('ID is: ',objectList[l].id);
           }        
 
       }else{
-        console.log('Showing all lis');
         $('#courseList li').show()
       }    
   }
 
   function filteringStrings(wordBlock, fixCat){
-    console.log('wordBlock: ', wordBlock);
-    console.log('fixCat: ', fixCat);
-    console.log('time: ', Math.floor(Date.now()));
     if ((typeof(fixCat) =='undefined') || (fixCat=='')) {
         fixCat='all';
     }
@@ -160,19 +152,15 @@ import json
       trueVal7 = element['short_description'].indexOf(wordBlock) > -1;
       trueVal8 = element['title'].indexOf(wordBlock) > -1;
       if(fixCat == 'all'){
-        console.log('filter All');
         return (trueVal1 || trueVal2 || trueVal3 || trueVal4 || trueVal5 || trueVal6 || trueVal7 || trueVal8 );
       }
       if(fixCat == 'description'){
-        console.log('Filter description');
         return (trueVal1 || trueVal2 || trueVal6 || trueVal7 || trueVal8 );
       }
       if(fixCat == 'category'){
-        console.log('Filter category');
         return (trueVal8 || trueVal3 || trueVal4 || trueVal5 || trueVal6  );
       }
       if(fixCat == 'author'){
-        console.log('filter Author');
         return (trueVal1 || trueVal5);
       }
 
@@ -185,7 +173,6 @@ import json
       searchFlag = true;
 
       if(overrideS == 'clear'){
-          console.log('Cleared Search');
           var term = '';
           var terms = '';
       }else{
@@ -195,30 +182,23 @@ import json
       }
       if((typeof(searchCat) == 'undefined') ||searchCat == '' || searchCat == 'all')
         {
-          console.log('Default SearchCat');
           var searchCat = 'all';
         }
       //On Terms use a loop function
       setTimeout(function(){
           /* VERIFY THAT FOR EVERY SEARCH THE LOADING TIME IS MINIMUM */
           //use deepCopy function for more than one term for better manipulation
-          console.log('Terms length: ', terms.length);
           filtered = deepCopy(courseRegistry); 
-          console.log('Terms array: ', terms);
           if(terms.length > 1)
           {  
           for(j=0; j<terms.length; j++)
             {     
               //Multi word search, unordered
               filtered = filtered.filter(filteringStrings(terms[j], searchCat));
-              console.log('Course Filters: ', filtered);
-              
             }
           }else{
           /* VERIFY THAT FOR EVERY SEARCH THE LOADING TIME IS MINIMUM */
             filtered = courseRegistry.filter(filteringStrings(term, searchCat));
-            console.log('Course Filter: ', filtered);
-
           }
           //if(jQuery){console.log('jQuery can be called');}
           searchHide(filtered, overrideS);
@@ -231,7 +211,6 @@ import json
   /*** SEARCH LISTENER ***/
   $(document.body).on("keyup", 'input#dash-Search', function(){
     if(($('input#dash-Search').val().length)>1){
-      console.log('Environment searchCat: ', searchCat);
       $('#formIcons').hide();
       searchInput(searchCat);  
     }else{
@@ -244,7 +223,6 @@ import json
     };
   function setCat(categoryS){
     searchCat = categoryS;
-    console.log('SearchCat is: ',searchCat);
     searchInput(searchCat);  
     $('#setCatText').text(categoryS.toUpperCase());
     dropSelect();

@@ -246,7 +246,6 @@ data-description="${get_course_about_section(request,course, 'description').lowe
            });
 
            function set_unenroll_message(track_info, refund_info, course_id, course_number) {
-            console.log('Modal ID is: ', course_id);
               document.getElementById('unenroll_course_id2').value = course_id;
               document.getElementById('track-info').innerHTML = interpolate(track_info, {course_number: "<span id='unenroll_course_number'>"+course_number+"</span>"}, true);
               document.getElementById('refund-info').innerHTML = refund_info;

@@ -184,12 +184,11 @@ from branding import api as branding_api
         */
 
     $(document).ready(function(){
-          browseWidth = $( window ).height();
-          browseWidth = browseWidth - 55- 85;
-          browseWidth = browseWidth+"px";
-          console.log(browseWidth);
-          $('#content').css("min-height", browseWidth);
-          });
+      browseWidth = $( window ).height();
+      browseWidth = browseWidth - 55- 85;
+      browseWidth = browseWidth+"px";
+      $('#content').css("min-height", browseWidth);
+    });
   </script>
   % if style_overrides_file:
     <link rel="stylesheet" type="text/css" href="${static.url(style_overrides_file)}" name="style override"/>

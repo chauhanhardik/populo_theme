@@ -117,18 +117,13 @@ from edxmako.shortcuts import marketing_link
 
 <script type="text/javascript">
     window.addEventListener("load", function load(event){
-          console.log("Document load listen");
            window.removeEventListener("load", load, false); //remove listener, no longer needed
            var imagesTotal = document.images.length;
             for (var i = 0; i < imagesTotal; i++) {
-                console.log("scaning");
                 if(document.images[i].className == "hero-image"){
                     if (!isImageOk(document.images[i])) {
                         document.images[i].src = "/static/themes/edx-theme/images/course2.png";
-                        console.log('Course with default image: ',  document.images[i].alt);
                         //document.images[i].style.visibility = "hidden";
-                    }else{
-                      console.log("imageurl alright");
                     }
                 } 
             }

@@ -21,6 +21,9 @@ from student.helpers import (
   VERIFY_STATUS_NEED_TO_REVERIFY,
   DISABLE_UNENROLL_CERT_STATES,
 )
+
+from student.models import CourseEnrollment
+
 def find_rev(str,target,start):
     str = str[::-1]
     index = str.find(target,len(str) - start)
@@ -157,7 +160,7 @@ def convert_line_endings(temp, mode):
 <%
   store = modulestore()
   course = store.get_course(enrollment.course_id)
- 
+  count = CourseEnrollment.objects.filter(course_id=course.id).count()
 %>
 <li class="col-xs-12 col-sm-6 col-md-4" id="${(no_slash(unicode(course_overview.id))).lower()}" 
 data-org="${(course_overview.display_org_with_default).lower()}" 
@@ -226,7 +229,7 @@ data-description="${get_course_about_section(request,course, 'description').lowe
             <div class="initial-avatar" style="background-color: ${avat_text2()}">${avat_text(course_overview.display_org_with_default)}</div> 
             ${course_overview.display_org_with_default}
           </div>
-          <div class="text-right"><a class="tip"><span>Times Accessed</span><img src="/static/themes/edx-theme/images/views-icon.png"></a>0</div>
+          <div class="text-right"><a class="tip"><span>Times Accessed</span><img src="/static/themes/edx-theme/images/views-icon.png"></a>${count}</div>
       </footer>
   </article>
 </li>

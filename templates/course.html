@@ -8,6 +8,7 @@ from django.utils.translation import ugettext as _
 from django.utils.translation import ungettext
 from django.core.urlresolvers import reverse
 from courseware.courses import course_image_url, get_course_about_section
+from student.models import CourseEnrollment
 
 def find_rev(str,target,start):
     str = str[::-1]
@@ -83,7 +84,9 @@ def no_slash(courseId):
 
 %>
 <%page args="course" />
-
+<%
+  count = CourseEnrollment.objects.filter(course_id=course.id).count()
+%>
 
 <li class="col-xs-12 col-sm-6 col-md-4" id="${(no_slash(unicode(course.id))).lower()}" 
   data-org="${course.display_org_with_default}"
@@ -136,7 +139,7 @@ def no_slash(courseId):
             </div> 
             ${course.display_org_with_default}
           </div>
-          <div class="text-right"><a class="tip"><span>Times accessed</span><img src="/static/themes/edx-theme/images/views-icon.png"></a>0</div>
+          <div class="text-right"><a class="tip"><span>Times accessed</span><img src="/static/themes/edx-theme/images/views-icon.png"></a>${count}</div>
       </footer>
   </article>
 </li>

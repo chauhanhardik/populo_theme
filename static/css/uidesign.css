@@ -57,7 +57,7 @@
 
   div#wrapper.container-fluid { max-width:1200px; margin:0 auto; }
   .margin-top { margin-top:15px; }
-  div#wrapper.container-fluid div.row div.col-md-12.margin-top { margin-bottom:15px; }
+  div#wrapper.container-fluid div.row div.col-md-12.margin-top { margin-bottom:15px; padding-bottom: 50px;}
   li.col-xs-12.col-sm-6.col-md-4 { padding:15px; }
   .tile { background-color:#fff; border-radius:3px; position: relative;}
 
@@ -571,5 +571,4 @@ button.tip.higher:hover span, a.tip.higher:hover span {
 .label{
   color:#5F5959;
 }
-
-.pad_bottom{padding-bottom: 50px;}
+#profile-sidebar{display: none;}

@@ -24,8 +24,8 @@ from edxmako.shortcuts import marketing_link
 
   ## OG (Open Graph) title and description added below to give social media info to display
   ## (https://developers.facebook.com/docs/opengraph/howtos/maximizing-distribution-media-content#tags)
-  <meta property="og:title" content="${get_course_about_section(course, 'title')}" />
-  <meta property="og:description" content="${get_course_about_section(course, 'short_description')}" />
+  <meta property="og:title" content="${course.display_name_with_default}" />
+  <meta property="og:description" content="${get_course_about_section(request, course, 'short_description')}" />
 </%block>
 
 <%block name="js_extra">
@@ -113,7 +113,7 @@ from edxmako.shortcuts import marketing_link
   <script src="${static.url('js/course_info.js')}"></script>
 </%block>
 
-<%block name="pagetitle">${get_course_about_section(course, "title")}</%block>
+<%block name="pagetitle">${course.display_name_with_default}</%block>
 
 <script type="text/javascript">
     window.addEventListener("load", function load(event){
@@ -138,15 +138,15 @@ from edxmako.shortcuts import marketing_link
 </script>
 
 <section class="container-fluid course-info info2">
-  <header class="course-profile">
+  <header class="course-profile custom_course_profile">
     <div class="intro-inner-wrapper">
       <div class="table">
       <section class="intro">
         <hgroup>
           <h1>
-            ${get_course_about_section(course, "title")}
+            ${course.display_name_with_default}
             % if not self.theme_enabled():
-              <a href="#">${get_course_about_section(course, "university")}</a>
+              <a href="#">${course.display_org_with_default}</a>
             % endif
           </h1>
         </hgroup>
@@ -203,7 +203,7 @@ from edxmako.shortcuts import marketing_link
         </div>
 
       </section>
-      % if get_course_about_section(course, "video"):
+      % if get_course_about_section(request, course, "video"):
       <a href="#video-modal" class="media" rel="leanModal">
         <div class="hero">
           <img src="${course_image_url(course)}" class="hero-image" alt="" />
@@ -232,7 +232,7 @@ from edxmako.shortcuts import marketing_link
  
 
       <div class="inner-wrapper">
-        ${get_course_about_section(course, "overview")}
+        ${get_course_about_section(request, course, "overview")}
       </div>
     </section>
 

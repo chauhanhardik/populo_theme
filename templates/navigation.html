@@ -72,6 +72,7 @@ PLACEHOLDER_USERNAME = '__PLACEHOLDER_USERNAME'
 %>
 
 <script type="text/javascript">
+% if request.user.is_authenticated():
 $(function() {
     var username2 = "${user.username}";
     //console.log("Username is: ", "${user.username}");
@@ -84,8 +85,7 @@ $(function() {
             url: profileUrl.replace('${PLACEHOLDER_USERNAME}', username2),
             success: function(response) {
                 var imageUrl = response["profile_image"]["image_url_medium"];
-                
-                console.log('Image Url response: ', imageUrl);
+                // console.log('Image Url response: ', imageUrl);
             }
         });
         //console.log('AJAX: ', ajaxCalled);
@@ -97,17 +97,14 @@ $(function() {
             success: function(response) {
                 var imageUrl = response["profile_image"]["image_url_medium"];
              
-                console.log('Image Url response: ', imageUrl);
+                //console.log('Image Url response: ', imageUrl);
                 $('#imageMain').attr("src", imageUrl);
             }
         });
     };
-    
     menuProfile(username2);
-
-    
 });
-
+%endif
 
 
 $(document).ready(function () {

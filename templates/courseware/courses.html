@@ -7,202 +7,6 @@
 
 <%namespace name='static' file='../static_content.html'/>
 
-<%block name="header_extras">
-  % if settings.FEATURES.get('ENABLE_COURSE_DISCOVERY'):
-  % for template_name in ["result_item", "filter_bar", "filter", "search_facets_list", "search_facets_section", "search_facet", "more_less_links"]:
-  <script type="text/template" id="${template_name}-tpl">
-      <%static:include path="discovery/${template_name}.underscore" />
-  </script>
-  % endfor
-  <script type="text/javascript">;(function (define) {{
-      define('course_discovery_meanings', function() {{
-          'use strict';
-          return ${json.dumps(course_discovery_meanings)};
-        }});
-      }})(define || RequireJS.define);
-  </script>
-  % endif
-</%block>
-
-<%block name="js_extra">
-  % if settings.FEATURES.get('ENABLE_COURSE_DISCOVERY'):
-  <%static:js group='discovery'/>
-  % endif
-  <script type="text/javascript">
-      window.addEventListener("load", function load(event){
-       window.removeEventListener("load", load, false); //remove listener, no longer needed
-       var imagesTotal = document.images.length;
-        for (var i = 0; i < imagesTotal; i++) {
-            if(document.images[i].className == "img-responsive course-image-main"){
-                if (!isImageOk(document.images[i])) {
-                    document.images[i].src = "/static/themes/edx-theme/images/course2.png";
-                    console.log('Course with default image: ',  document.images[i].alt);
-                    //document.images[i].style.visibility = "hidden";
-                }
-            } 
-        }
-
-    },false);
-  </script>
-  <script type="text/javascript">
-  var searchFlag = false;
-  var filterFlag = false;
-  var overrideS;
-  var searchCat = 'all';
-  var courseRegistry =[];
-
-  $(document).ready(function(){
-       courseRegistry =[]
-       var registryElements = $('ul#courseSearch > li');
-       console.log('courseRegistry length: ',courseRegistry.length);
-       for(i=0; i<registryElements.length; i++){
-        var regObject = {
-          id: registryElements[i].attributes['id'].nodeValue.toLowerCase(),
-          title: registryElements[i].attributes['data-title'].nodeValue.toLowerCase(),
-          org: registryElements[i].attributes['data-org'].nodeValue.toLowerCase(),
-          number: registryElements[i].attributes['data-number'].nodeValue.toLowerCase(),
-          short_description: registryElements[i].attributes['data-shortdescription'].nodeValue.toLowerCase(),
-          description: registryElements[i].attributes['data-description'].nodeValue.toLowerCase(),
-          course_staff_short: registryElements[i].attributes['data-staff'].nodeValue.toLowerCase(),
-          requirements: registryElements[i].attributes['data-requirements'].nodeValue.toLowerCase()
-        }
-        courseRegistry.push(regObject);
-        console.log('List courses: ',registryElements[i].attributes);
-       }
-       console.log('courseRegistry: ',courseRegistry);
-
-      $()
-
-    });
-
-  /** SEARCH CONFIGURATION **/
-  function searchHide(objectList, clear){
-    //Should be called per each for hids
-    if(typeof(clear)=='undefined')
-      {
-        $('#courseSearch li').hide();     //Hide all li and show only the ones with id
-        for(l=0; l<objectList.length; l++)
-          {
-            $('#'+objectList[l].id).show();
-            console.log('ID is: ',objectList[l].id);
-          }        
-
-      }else{
-        console.log('Showing all lis');
-        $('#courseSearch li').show()
-      }    
-  }
-
-  function filteringStrings(wordBlock, fixCat){
-    console.log('wordBlock: ', wordBlock);
-    console.log('fixCat: ', fixCat);
-    console.log('time: ', Math.floor(Date.now()));
-    if ((typeof(fixCat) =='undefined') || (fixCat=='')) {
-        fixCat='all';
-    }
-    return function(element){
-      /*Should return a true statement*/      
-    
-      /*element is an object*/
-      trueVal1 = element['course_staff_short'].indexOf(wordBlock) > -1;
-      trueVal2 = element['description'].indexOf(wordBlock) > -1;
-      trueVal3 = element['id'].indexOf(wordBlock) > -1;
-      trueVal4 = element['number'].indexOf(wordBlock) > -1;
-      trueVal5 = element['org'].indexOf(wordBlock) > -1;
-      trueVal6 = element['requirements'].indexOf(wordBlock) > -1;
-      trueVal7 = element['short_description'].indexOf(wordBlock) > -1;
-      trueVal8 = element['title'].indexOf(wordBlock) > -1;
-      if(fixCat == 'all'){
-        console.log('filter All');
-        return (trueVal1 || trueVal2 || trueVal3 || trueVal4 || trueVal5 || trueVal6 || trueVal7 || trueVal8 );
-      }
-      if(fixCat == 'description'){
-        console.log('Filter description');
-        return (trueVal1 || trueVal2 || trueVal6 || trueVal7 || trueVal8 );
-      }
-      if(fixCat == 'category'){
-        console.log('Filter category');
-        return (trueVal8 || trueVal3 || trueVal4 || trueVal5 || trueVal6  );
-      }
-      if(fixCat == 'author'){
-        console.log('filter Author');
-        return (trueVal1 || trueVal5);
-      }
-
-    }
-  }
-
-  function searchInput(searchCat, overrideS){
-    if(searchFlag == false || typeof(overrideS) == 'string'){
-      //Stop OverQueu with searchFlag
-      searchFlag = true;
-
-      if(overrideS == 'clear'){
-          console.log('Cleared Search');
-          var term = '';
-          var terms = '';
-      }else{
-        var term = $('input#dash-Search').val();
-        term= term.toLowerCase();
-        var terms = term.split(" ");
-      }
-      if((typeof(searchCat) == 'undefined') ||searchCat == '' || searchCat == 'all')
-        {
-          console.log('Default SearchCat');
-          var searchCat = 'all';
-        }
-      //On Terms use a loop function
-      setTimeout(function(){
-          /* VERIFY THAT FOR EVERY SEARCH THE LOADING TIME IS MINIMUM */
-          //use deepCopy function for more than one term for better manipulation
-          console.log('Terms length: ', terms.length);
-          filtered = deepCopy(courseRegistry); 
-          console.log('Terms array: ', terms);
-          if(terms.length > 1)
-          {  
-          for(j=0; j<terms.length; j++)
-            {     
-              //Multi word search, unordered
-              filtered = filtered.filter(filteringStrings(terms[j], searchCat));
-              console.log('Course Filters: ', filtered);
-              
-            }
-          }else{
-          /* VERIFY THAT FOR EVERY SEARCH THE LOADING TIME IS MINIMUM */
-            filtered = courseRegistry.filter(filteringStrings(term, searchCat));
-            console.log('Course Filter: ', filtered);
-
-          }
-          //if(jQuery){console.log('jQuery can be called');}
-          searchHide(filtered, overrideS);
-
-          searchFlag = false;
-        }, 250);
-    }
-    return false;
-  }
-  /*** SEARCH LISTENER ***/
-  $(document.body).on("keyup", 'input#dash-Search', function(){
-    if(($('input#dash-Search').val().length)>1){
-      console.log('Environment searchCat: ', searchCat);
-      $('#formIcons').hide();
-      searchInput(searchCat);  
-    }else{
-      searchInput(searchCat, 'clear');  
-      $('#formIcons').show();
-    }
-  });
-  function setCat(categoryS){
-    searchCat = categoryS;
-    console.log('SearchCat is: ',searchCat);
-    searchInput(searchCat);  
-    $('#setCatText').text(categoryS.toUpperCase());
-  }
-
-
-  </script>
-</%block>
-
 <%block name="pagetitle">${_("Courses")}</%block>
 <%
   platform_name = microsite.get_value('platform_name', settings.PLATFORM_NAME)
@@ -227,7 +31,11 @@
 
     logo_alt_text = _("{platform_name} Logo").format(platform_name=platform_name)
 %>
-
+<style>
+  .courses{width: 100% !important;padding: 7px 5px !important;margin-top: 10px;}
+  .courses-container{background-color: #ECEDEF !important;}
+  .find-courses{padding-bottom: 0 !important;}
+</style>
 
 <div id="wrapper" class="container-fluid">
 
@@ -248,7 +56,11 @@
               <div class="col-sm-5 padding-5">
                   <div id="search" class="input-group">
                       <span class="form-control-feedback"><img src="/static/themes/edx-theme/images/search-icon.png">Search</span>
-                      <input id="dash-Search" type="text" class="form-control" aria-label="...">
+                      <form method="get" action="/courses">
+                      <input id="dash-Search" name="search_query" type="text" class="form-control" aria-label="..." />
+                      <input id="criteria" name="criteria" type="hidden" value="all" />
+                      <input type="submit" style="position: absolute; left: -9999px"/>
+                      </form>
                       <div class="input-group-btn">
                         <button id="ddl_cat_list" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="" id="setCatText">ALL</span> <span class="caret"></span></button>
                         <ul id="ddl_cat" class="dropdown-menu dropdown-menu-right">
@@ -263,18 +75,36 @@
           </div>
       </div>
     </div>
+    <section class="find-courses">
+      <section class="courses-container">
+        <section class="courses${'' if course_discovery_enabled else ' no-course-discovery'}">
+            %if courses:
+              <ul class="courses-listing list-inline">
 
-  <div class="row">
-      <div class="col-md-12 margin-top pad_bottom">
-          <ul id="courseSearch" class="list-inline">
-            %for course in courses:
-              <%include file="../course.html" args="course=course" />
-            %endfor
-          </ul>
-      </div>
-  </div>
+                <%
+                  # sort course list for set activity result at last in course listing page
+                  # by Hardik Chauhan
+                  sorted_courses_by_activity = sorted(courses, key=lambda k: k.is_activity) 
+                %>
+
+                %for course in sorted_courses_by_activity:
+                  <%include file="../course.html" args="course=course" />
+                %endfor
+              </ul>
+            % else:
+              <h1>No result found!!!</h1>
+            %endif
+        </section>
+      </section>
+    </section>
 </div>
+
 <script type="text/javascript">
+  function setCat(categoryS){
+    searchCat = categoryS;
+    $('#setCatText').text(categoryS.toUpperCase());
+    $('#criteria').val(categoryS.toLowerCase());
+  }
   $(document).ready(function(){
 
     $("#ddl_cat_list").click(function(event){
@@ -288,5 +118,25 @@
     $("#ddl_cat li a").click(function(){
       $(this).closest('.input-group-btn').removeClass('open');
     });
+
+    // To show the last selected criteria and search query: Naresh
+    current_search_query = getParameterByName('search_query');
+    if(current_search_query != "undefined"){
+      $("#dash-Search").val(current_search_query);
+      $(".form-control-feedback").hide();
+    }
+    $("#dash-Search").focusout(function(){
+      if($(this).val() == ""){
+        $(".form-control-feedback").show();
+      }
+    });
+    if(current_search_query == "" || current_search_query === null){
+      $(".form-control-feedback").show(); 
+    }
+    current_criteria = getParameterByName('criteria');
+    if(current_criteria) {
+      setCat(current_criteria);
+    }
+
   });
 </script>

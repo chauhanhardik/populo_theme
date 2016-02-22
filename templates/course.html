@@ -7,8 +7,12 @@ import urllib
 from django.utils.translation import ugettext as _
 from django.utils.translation import ungettext
 from django.core.urlresolvers import reverse
-from courseware.courses import course_image_url, get_course_about_section
+from courseware.courses import course_image_url, get_course_about_section,get_course_by_id
 from student.models import CourseEnrollment
+
+
+from openedx.core.djangoapps.bookmarks.models import Bookmark
+from django.db.models import Count
 
 def find_rev(str,target,start):
     str = str[::-1]
@@ -83,11 +87,101 @@ def no_slash(courseId):
     return textOut
 
 %>
+<%
+  # this will fetch first instructor of course
+  from student.roles import CourseInstructorRole
+  from openedx.core.djangoapps.user_api.accounts.image_helpers import get_profile_image_urls_for_user
+  users = CourseInstructorRole(course.id).users_with_role()
+  instructors = [instructor for instructor in users]
+  author_name = instructor.profile.name if instructor.profile.name else instructor.username 
+  author_image_url = get_profile_image_urls_for_user(instructors[0])['medium']
+%>
 <%page args="course" />
 <%
-  count = CourseEnrollment.objects.filter(course_id=course.id).count()
+  try:
+    count = CourseEnrollment.objects.filter(course_id=course.id).count()
+  except:
+    count = 0
+%>
+<%
+  cust_course = get_course_by_id(course.id)
+  bookmarks = Bookmark.objects.filter(user_id=request.user.id)
+  bookmark_count = Bookmark.objects.annotate(Count("usage_key"))
+  
+  bookmark_list = []
+  
+  for bm in bookmarks:
+    bookmark_list.append(str(bm.usage_key))
 %>
 
+% if cust_course.is_activity:
+  % for section in cust_course.get_children():
+    % for sub_section in section.get_children():
+      % for unit in sub_section.get_children():
+        <%
+          try:
+            bk_count = sum([bk.usage_key__count for bk in bookmark_count if unit.url_name in str(bk.usage_key)])
+          except:
+            bk_count = 0
+        %>
+        <li class="col-xs-12 col-sm-6 col-md-4" id="${(no_slash(unicode(cust_course.id))).lower()}" 
+          data-org="${course.display_org_with_default}"
+          data-number="${course.display_number_with_default}"
+          data-title="${sub_section.display_name_with_default}"
+          data-staff=""
+          data-requirements=""
+          data-shortdescription="${get_course_about_section(request, course, "short_description")}"
+          data-description=""
+          >
+          <article class="tile">  
+              <section class="tile-header">
+                    <div class="course-title">
+                      <p class='${"activity" if cust_course.is_activity else "course"}'></p>
+                      ${title_limit(unit.display_name_with_default, 30)}
+                    </div>
+                    <div class="text-right">
+                      <a href="${reverse('courseware_section', args=[course.id, section.url_name, sub_section.url_name])}" class="tip">
+                      <span>Activity</span>
+                        <img src="/static/themes/edx-theme/images/go-arrow.png">
+                      </a>
+                    </div>
+              </section>
+              <div class="course-description"></div>
+                <div class="wrapper-course-subtitle sub2">
+                  <p class="short-description"></p>
+                  <div class="bottomIcon" style="width:160px; margin: 0 auto;">
+                      <div class="col-xs-offset-3 col-xs-6 enterCourse" style="position: relative;">       
+                          <a href="${reverse('courseware_section', args=[course.id, section.url_name, sub_section.url_name])}" class="enter-course tip">
+                              <img src="/static/themes/edx-theme/images/register-icon-blue-b.svg" style="height:54px; width:54px;">
+                          </a>             
+                      </div>          
+                
+                  </div>
+                </div>
+
+
+              <div class="course-image">
+              <div class="imageConstraing" style="">
+            
+                <img class="img-responsive course-image-main" src="${course_image_url(course)}" alt="${course.display_name_with_default}">
+                
+                </div>
+              </div>
+              <footer class="tile-footer">
+                  <div class="tile-avatar">
+                    <div class="initial-avatar" style="background-color: ${avat_text2()}">
+                    <img class="img-responsive course-image-main" src="${author_image_url}" alt="Author Image">
+                    </div> 
+                    ${author_name}
+                  </div>
+                  <div class="text-right"><a class="tip"><span>Times accessed</span><img src="/static/themes/edx-theme/images/views-icon.png"></a>${bk_count}</div>
+              </footer>
+          </article>
+        </li>
+      % endfor
+    % endfor
+  % endfor
+%else:
 <li class="col-xs-12 col-sm-6 col-md-4" id="${(no_slash(unicode(course.id))).lower()}" 
   data-org="${course.display_org_with_default}"
   data-number="${course.display_number_with_default}"
@@ -99,7 +193,10 @@ def no_slash(courseId):
   >
   <article class="tile">  
       <section class="tile-header">
-            <div class="course-title">${title_limit(course.display_name_with_default, 30)}</div>
+            <div class="course-title">
+              <p class='${"activity" if cust_course.is_activity else "course"}'></p>
+              ${title_limit(course.display_name_with_default, 30)}
+            </div>
             <div class="text-right">
               <a href="${reverse('about_course', args=[course.id.to_deprecated_string()])}" class="tip">
               <span>Register</span>
@@ -135,11 +232,12 @@ def no_slash(courseId):
       <footer class="tile-footer">
           <div class="tile-avatar">
             <div class="initial-avatar" style="background-color: ${avat_text2()}">
-            ${course.display_org_with_default}
+            <img class="img-responsive course-image-main" src="${author_image_url}" alt="Author Image">
             </div> 
-            ${course.display_org_with_default}
+            ${author_name}
           </div>
           <div class="text-right"><a class="tip"><span>Times accessed</span><img src="/static/themes/edx-theme/images/views-icon.png"></a>${count}</div>
       </footer>
   </article>
 </li>
+%endif

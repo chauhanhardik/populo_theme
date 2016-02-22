@@ -27,6 +27,7 @@ ${page_title_breadcrumbs(course_name())}
 
 <%block name="header_extras">
 <style name="course-dashboard">
+  #seq_content { margin-bottom: 100px; }
   html,body { margin:0;padding:0;height:auto;background-color:#ecedef !important; font-family: 'Open Sans', sans-serif;  }
   div#wrapper.container-fluid { max-width:1500px; margin-left:auto; margin-right:auto; padding-top:30px; padding-left:0px; padding-right:0px; margin-top:7px;}
   .row { margin-right: -15px; margin-left: -15px; }
@@ -148,7 +149,8 @@ ${page_title_breadcrumbs(course_name())}
       #titleBlock{
       height:156px;
     }
-    }
+  }
+  .courseware-bookmarks-button{display:none;}
 </style>
 
 % for template_name in ["image-modal"]:
@@ -215,19 +217,18 @@ ${page_title_breadcrumbs(course_name())}
 
   <script type="text/javascript">
     var $$course_id = "${course.id | escapejs}";
- /*
-(function($){
- 
-        $("ul#chapters-wrapper div.chapter").on("click", function(){
-            var indexedAc = $("div.chapter").index($("div.is-open"));
-            $("ul#chapters-wrapper div.chapter").removeClass("completed");
-            for(i=1; i<=indexedAc; i++){
-  $("ul#chapters-wrapper div.chapter:nth-child("+i+")").addClass("completed");
-  console.log("divIndex is: ", i);
- }
-          });
-      })(jQuery);
-*/
+     /*
+    (function($){
+    $("ul#chapters-wrapper div.chapter").on("click", function(){
+        var indexedAc = $("div.chapter").index($("div.is-open"));
+        $("ul#chapters-wrapper div.chapter").removeClass("completed");
+        for(i=1; i<=indexedAc; i++){
+          $("ul#chapters-wrapper div.chapter:nth-child("+i+")").addClass("completed");
+          console.log("divIndex is: ", i);
+        }
+      });
+    })(jQuery);
+    */
     $(function(){
         $(".ui-accordion-header a, .ui-accordion-content .subtitle-name").each(function() {
           var elemText = $(this).text().replace(/^\s+|\s+$/g,''); // Strip leading and trailing whitespace
@@ -252,9 +253,7 @@ ${page_title_breadcrumbs(course_name())}
 
       $(document).on('click','div.chapter-title', function(){
         $(this).children("div.chapter-items").children().toggle(500);
-
         $(this).parent("li").children("ul").toggleClass( "in" );
-        console.log('Images Toggled');
       });
 
   </script>
@@ -264,7 +263,14 @@ ${fragment.foot_html()}
 </%block>
 <div class="message-banner" aria-live="polite"></div>
 
-
+<%
+  is_activity = (str(course.id) == "course-v1:activity+activity+activity")
+%>
+% if not is_activity:
+  <style type="text/css">
+    .bookmark-button-wrapper{display: none;}
+  </style>
+% endif
 % if default_tab:
   <%include file="/courseware/course_navigation.html" />
 % else:
@@ -272,7 +278,7 @@ ${fragment.foot_html()}
 % endif
 
 <div class="container-fluid" style="" id="wrapper">
-  <div class="row" role="presentation">
+  <div role="presentation">
   <section class="col-xs-12" id="titleBlock">
     <div class="text-center" style="margin-top: 20px;">
       <img src="/static/themes/edx-theme/images/rocket-icon-filled.png" width="25" height="25">
@@ -299,6 +305,12 @@ ${fragment.foot_html()}
     
 
 % if disable_accordion is UNDEFINED or not disable_accordion:
+  <div class="courseware-bookmarks-button" data-bookmarks-api-url="${bookmarks_api_url}">
+      <button type="button" class="bookmarks-list-button is-inactive" aria-pressed="false">
+          ${_('Bookmarks')}
+      </button>
+  </div>
+  % if not is_activity:
     <section class="col-md-3" role="navigation" id="accordionMenu">
 
       % if settings.FEATURES.get('ENABLE_COURSEWARE_SEARCH'):
@@ -346,10 +358,10 @@ ${fragment.foot_html()}
             <div class="chapter">${_("No content has been added to this course")}</div>
           % endif
       </ul>
-
     </section>
+  % endif
 % endif
-    <section class="col-md-9">
+    <section class="${'col-md-12' if is_activity else 'col-md-9'}">
       <section class="course-content" id="course-content2" role="main" aria-label="Content" style="margin-top:0px;">
          <!--timeline-->
             <div class="timeline">

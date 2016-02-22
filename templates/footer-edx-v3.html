@@ -1,0 +1,43 @@
+## mako
+<%! from django.utils.translation import ugettext as _ %>
+<%! from microsite_configuration.templatetags.microsite import platform_name %>
+<%namespace name='static' file='static_content.html'/>
+
+##Footer might need changing back to only footer.global, fixed position is not adequate.
+<footer class="global navbar navbar-default">
+  
+    <div class="col-md-12 text-center hidden-xs">
+       <span>&copy;Copyright 2015 populo</span>
+     <!--  <span>Made With</span> -->
+      <img class="padding-5" src="/static/themes/edx-theme/images/populo-logo.png" style="height:30px; ">
+       <!-- <span>in Chicago</span> -->
+        <ul class="list-inline">
+
+            <li><a href="#">Terms</a></li>
+            <li><a href="#">Privacy</a></li>
+        </ul>
+    </div>
+    
+    <div class="visible-xs">
+        <div class="col-xs-12 collapse-header text-center">
+                <a href="#legal-links" data-toggle="collapse" aria-expanded="false" aria-controls="legal-links">
+                    <img src="/static/themes/edx-theme/images/expand-icon.png">
+                </a>
+        </div>        
+                
+        <div class="collapse" id="legal-links">
+            <div class="col-xs-12 text-center">
+                <ul class="list-group">
+                    <li><a href="#">Terms</a></li>
+                    <li><a href="#">Privacy</a></li>
+                </ul>
+            </div>
+        </div>  
+        
+        <div class="col-xs-12 text-center">        
+            <!--  <span>Made With</span> -->
+              <img class="padding-5" src="/static/themes/edx-theme/images/populo-logo.png" style="height:30px; ">
+            <!-- <span>in Chicago</span> -->
+        </div>
+    </div>
+</footer>

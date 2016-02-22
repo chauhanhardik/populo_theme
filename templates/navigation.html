@@ -129,39 +129,62 @@ $(document).ready(function () {
 });
 
 </script>
-% if user.is_authenticated():
 <header class="navbar navbar-default navbar-fixed-top global" id="mainMenu">
   <div class="col-md-12 nav-dd ui-right">
 
-    <div class="btn-group col-xs-3" style="padding-left: 0px;">
-      <nav class="hidden-xs" style="padding-top: 11px;">
-        <a id="menuD" href="#" class="header-icon tip higher">
-       
-          <img src="/static/themes/edx-theme/images/menu-icon.png" style="">
-        </a>
-        <ul id="menuD-wrapper" class="dropdown-menu menuD">
-            <li>
-                <a href="/" >
-                <img src="/static/themes/edx-theme/images/dashboard-icon-blue.svg" width="35" height="35" />My Dashboard
-                </a>
-            </li> 
-            <li>
-                <a href="${marketing_link('COURSES')}">
-                <img src="/static/themes/edx-theme/images/search-courses-blue-icon.svg" width="35" height="35" />Search Activities
-                </a>
-            </li> 
-            % if GlobalStaff().has_user(user):
-            <li>
-                <a href="${justIp(("{cms_base}").format(cms_base=settings.CMS_BASE))}:18010/home">
-                <img src="/static/themes/edx-theme/images/designer-icon-blue.svg" width="35" height="35" />${_("Activity Designer").format(platform_name=settings.PLATFORM_NAME)}
-                </a>
-            </li>      
-            % endif                    
-        </ul>
- 
-      </nav>
-    </div>
+        % if user.is_authenticated():
+          <div class="btn-group col-xs-1" style="padding-left: 0px;">
+            <nav class="hidden-xs" style="padding-top: 11px;">
+              <a id="menuD" href="#" class="header-icon tip higher">
+             
+                <img src="/static/themes/edx-theme/images/menu-icon.png" style="">
+              </a>
+              <ul id="menuD-wrapper" class="dropdown-menu menuD">
+                  <li>
+                      <a href="/" >
+                      <img src="/static/themes/edx-theme/images/dashboard-icon-blue.svg" width="35" height="35" />My Dashboard
+                      </a>
+                  </li> 
+                  <li>
+                      <a href="${marketing_link('COURSES')}">
+                      <img src="/static/themes/edx-theme/images/search-courses-blue-icon.svg" width="35" height="35" />Search
+                      </a>
+                  </li> 
+                  % if GlobalStaff().has_user(user):
+                  <li>
+                      <a href="${justIp(("{cms_base}").format(cms_base=settings.CMS_BASE))}:18010/home">
+                      <img src="/static/themes/edx-theme/images/designer-icon-blue.svg" width="35" height="35" />${_("Activity Designer").format(platform_name=settings.PLATFORM_NAME)}
+                      </a>
+                  </li>      
+                  % endif                    
+              </ul>
+            </nav>
+          </div>
+        % else:
+          <style>
+          .view-register header.global nav, .view-login header.global nav{width: auto;}
+          </style>
+          <div class="btn-group col-xs-2">
+            <nav class="hidden-xs" style="padding: 0;">
+              <a href="${marketing_link('ROOT')}" class="header-icon tip higher">
+                <img src="/static/themes/edx-theme/images/populo-logo.png" style="height:45px;">
+              </a>
+            </nav>
+          </div>
+          <ol class="left nav-global">
+            <%block name="navigation_other_global_links">
+              % if not settings.FEATURES['DISABLE_LOGIN_BUTTON']:
+                  % if settings.FEATURES.get('ENABLE_COURSE_DISCOVERY'):
+                  <li class="nav-global-05">
+                    <a class="cta cta-discovery" href="/courses">${_("Find Courses")}</a>
+                  </li>
+                  %endif
+              % endif
+            </%block>
+          </ol>
+        % endif
     <div class="btn-group profile-wrapper pull-right">
+      % if user.is_authenticated():
         <nav class="hidden-xs pull-right" style="padding-top: 0px;">
           <a id="profile-menu" style="display:table;" class="tip higher">
             <div class="tile-avatar">
@@ -189,22 +212,44 @@ $(document).ready(function () {
               </a>
             </li>                          
           </ul>
-        </nav>    
+        </nav> 
+        <a class="header-icon pull-right tip higher" href="/inbox/notifications/unread/">
+        %if unread_count:
+          <p class="notification_alert"></p>
+        %endif 
+        <span>Notifications and activities</span><img src="/static/themes/edx-theme/images/notification-icon.png"></a>
+        <a class="header-icon pull-right tip higher" href="#"><span>Messages</span><img src="/static/themes/edx-theme/images/message-icon.png">
+        </a>
+        % else:
+          <style>
+          header.global .nav-courseware li .cta, header.global .nav-courseware div .cta, .login .form-actions button[type="submit"], .register .form-actions button[type="submit"], .passwordreset .form-actions button[type="submit"], #forgot-password-modal #password-reset .form-actions button[type="submit"], .view-survey .action-primary{color: #fff !important; margin-left: 20px; padding: 7px 20px !important;}
+          </style>
+          <ol class="right nav-courseware">
+            <%block name="navigation_sign_in">
+              <li class="nav-courseware-01">
+                % if not settings.FEATURES['DISABLE_LOGIN_BUTTON']:
+                    % if course and settings.FEATURES.get('RESTRICT_ENROLL_BY_REG_METHOD') and course.enrollment_domain:
+                    <a class="cta cta-login" href="${reverse('course-specific-login', args=[course.id.to_deprecated_string()])}${login_query()}">${_("Sign in")}</a>
+                    % else:
+                    <a class="cta cta-login" href="/login${login_query()}">${_("Sign in")}</a>
+                    % endif
+                % endif
+                % if course and settings.FEATURES.get('RESTRICT_ENROLL_BY_REG_METHOD') and course.enrollment_domain:
+                <li class="nav-global-04">
+                  <a class="cta cta-register" href="${reverse('course-specific-register', args=[course.id.to_deprecated_string()])}">${_("Register")}</a>
+                </li>
+                % else:
+                <li class="nav-global-04">
+                  <a class="cta cta-register" href="/register${login_query()}">${_("Register")}</a>
+                </li>
+                % endif
+              </li>
+            </%block>
+          </ol>
+        % endif   
     </div> 
-
-     
-    <a class="header-icon pull-right tip higher" href="/inbox/notifications/unread/">
-    %if unread_count:
-      <p class="notification_alert"></p>
-    %endif 
-    <span>Notifications and activities</span><img src="/static/themes/edx-theme/images/notification-icon.png"></a>
-    <a class="header-icon pull-right tip higher" href="#"><span>Messages</span><img src="/static/themes/edx-theme/images/message-icon.png">
-    </a>
   </div>
 </header>
-% endif
-
-
 
 % if course:
 <!--[if lte IE 9]>

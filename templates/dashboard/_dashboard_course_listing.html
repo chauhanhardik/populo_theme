@@ -10,7 +10,8 @@ from django.utils.translation import ungettext
 from django.core.urlresolvers import reverse
 from markupsafe import escape
 from xmodule.modulestore.django import modulestore
-from courseware.courses import get_course_about_section
+from courseware.courses import get_course_about_section, get_course_by_id
+from openedx.core.djangoapps.bookmarks.models import Bookmark
 from openedx.core.lib.courses import course_image_url
 from course_modes.models import CourseMode
 from student.helpers import (
@@ -23,6 +24,7 @@ from student.helpers import (
 )
 
 from student.models import CourseEnrollment
+from django.db.models import Count
 
 def find_rev(str,target,start):
     str = str[::-1]
@@ -160,8 +162,125 @@ def convert_line_endings(temp, mode):
 <%
   store = modulestore()
   course = store.get_course(enrollment.course_id)
-  count = CourseEnrollment.objects.filter(course_id=course.id).count()
+  count  = 0
+  try:
+      count = CourseEnrollment.objects.filter(course_id=course.id).count()
+  except:
+     count = 0
 %>
+<%
+  # this will fetch first instructor of course
+  from student.roles import CourseInstructorRole
+  from openedx.core.djangoapps.user_api.accounts.image_helpers import get_profile_image_urls_for_user
+  users = CourseInstructorRole(course.id).users_with_role()
+  instructors = [instructor for instructor in users]
+  author_name = instructor.profile.name if instructor.profile.name else instructor.username 
+  author_image_url = get_profile_image_urls_for_user(instructors[0])['medium']
+%>
+
+<%
+  cust_course = get_course_by_id(course.id)
+  bookmarks = Bookmark.objects.filter(user_id=request.user.id)
+  bookmark_count = Bookmark.objects.annotate(Count("usage_key"))
+  
+  bookmark_list = []
+  
+  for bm in bookmarks:
+    bookmark_list.append(str(bm.usage_key))
+%>
+% if cust_course.is_activity:
+% for section in cust_course.get_children():
+    % for sub_section in section.get_children():
+        % for unit in sub_section.get_children():
+          % if [unit.url_name for bookm in bookmark_list if unit.url_name in bookm]:
+            <%
+              bk_count = sum([bk.usage_key__count for bk in bookmark_count if unit.url_name in str(bk.usage_key)])
+              usage_key = [str(bk.usage_key) for bk in bookmark_count if unit.url_name in str(bk.usage_key)]
+            %>
+            <li class="col-xs-12 col-sm-6 col-md-4" id="${(no_slash(unicode(course_overview.id))).lower()}" 
+            data-org="${(course_overview.display_org_with_default).lower()}" 
+            data-number="${(course_overview.display_number_with_default).lower()}"  
+            data-title="${(course_overview.display_name_with_default_escaped).lower()}" 
+            data-staff="${get_course_about_section(request, course, 'course_staff_short').lower()}" 
+            data-requirements="${get_course_about_section(request, course, 'requirements').lower()}" 
+            data-shortdescription="${get_course_about_section(request, course, 'short_description').lower()}" 
+            data-description="${get_course_about_section(request,course, 'description').lower()}" 
+            data-usage-key="${usage_key[0]}"
+            >
+               <article class="tile">  
+                  <section class="tile-header">
+                        <div class="course-title">
+                          <p class='${"activity" if cust_course.is_activity else "course"}'></p>
+                          ${title_limit(unit.display_name_with_default, 30)}
+                        </div>
+                        <div class="text-right">
+                          <a href="${reverse('courseware_section', args=[course.id, section.url_name, sub_section.url_name])}" class="tip">
+                          <span>Activity</span>
+                            <img src="/static/themes/edx-theme/images/go-arrow.png">
+                          </a>
+                        </div>
+                  </section>
+                  <div class="course-description"></div>
+                    <div class="wrapper-course-subtitle sub2">
+                      <p class="short-description"></p>
+                      <div class="bottomIcon" style="width:160px; margin: 0 auto;">
+                        <div class="col-xs-6 enterCourse" style="position: relative;">       
+                            <a href="${reverse('courseware_section', args=[course.id, section.url_name, sub_section.url_name])}" class="enter-course tip">
+                             
+                                <img src="/static/themes/edx-theme/images/Enter.png">
+                            </a>             
+                        </div>
+
+                        <div class="col-xs-6 rocketCourse" style="">
+                          <a href="" class="delete_activity">
+                            <img src="/static/themes/edx-theme/images/stop.png"  alt="5">
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+
+                  <div class="course-image">
+                  <div class="imageConstraing" style="">
+                
+                    <img class="img-responsive course-image-main" src="${course_image_url(course)}" alt="${course.display_name_with_default}">
+                    
+                    </div>
+                  </div>
+                  <footer class="tile-footer">
+                      <div class="tile-avatar">
+                        <div class="initial-avatar" style="background-color: ${avat_text2()}">
+                        <img class="img-responsive course-image-main" src="${author_image_url}" alt="Author Image">
+                        </div> 
+                        ${author_name}
+                      </div>
+                      <div class="text-right"><a class="tip"><span>Times accessed</span><img src="/static/themes/edx-theme/images/views-icon.png"></a>${bk_count}</div>
+                  </footer>
+              </article>
+            </li>
+
+
+            <script>
+              $( document ).ready(function() {
+                 if("${is_course_blocked}" == "True"){
+                     $( "#unregister_block_course" ).click(function() {
+                         $('.disable-look-unregister').click();
+                     });
+                 }
+              });
+
+              function set_unenroll_message(track_info, refund_info, course_id, course_number) {
+                document.getElementById('unenroll_course_id2').value = course_id;
+                document.getElementById('track-info').innerHTML = interpolate(track_info, {course_number: "<span id='unenroll_course_number'>"+course_number+"</span>"}, true);
+                document.getElementById('refund-info').innerHTML = refund_info;
+              };
+            </script>
+          % endif
+        % endfor
+    % endfor
+  % endfor
+% else:
+
 <li class="col-xs-12 col-sm-6 col-md-4" id="${(no_slash(unicode(course_overview.id))).lower()}" 
 data-org="${(course_overview.display_org_with_default).lower()}" 
 data-number="${(course_overview.display_number_with_default).lower()}"  
@@ -177,7 +296,8 @@ data-description="${get_course_about_section(request,course, 'description').lowe
    course_target = reverse('courseware', args=[unicode(course_overview.id)]) 
    %>
       <section class="tile-header">
-            <div class="course-title">${title_limit(course_overview.display_name_with_default, 30)}</div>
+
+            <div class="course-title"><p class='${"activity" if cust_course.is_activity else "course"}'>&nbsp;</p>${title_limit(course_overview.display_name_with_default, 30)}</div>
             <div class="text-right">
               <a href="${course_target}" data-course-key="${enrollment.course_id}" class="tip">
               <span>Launch</span>
@@ -226,8 +346,10 @@ data-description="${get_course_about_section(request,course, 'description').lowe
       </div>
       <footer class="tile-footer">
           <div class="tile-avatar">
-            <div class="initial-avatar" style="background-color: ${avat_text2()}">${avat_text(course_overview.display_org_with_default)}</div> 
-            ${course_overview.display_org_with_default}
+            <div class="initial-avatar" style="background-color: ${avat_text2()}">
+            <img class="img-responsive course-image-main" src="${author_image_url}" alt="Author Image">
+            </div> 
+            ${author_name}
           </div>
           <div class="text-right"><a class="tip"><span>Times Accessed</span><img src="/static/themes/edx-theme/images/views-icon.png"></a>${count}</div>
       </footer>
@@ -251,3 +373,6 @@ data-description="${get_course_about_section(request,course, 'description').lowe
               document.getElementById('refund-info').innerHTML = refund_info;
            };
 </script>
+
+
+%endif

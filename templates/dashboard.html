@@ -48,11 +48,7 @@ import json
       });
     });
   </script>
-  % if settings.FEATURES.get('ENABLE_DASHBOARD_SEARCH'):
-    <%static:require_module module_name="js/search/dashboard/dashboard_search_factory" class_name="DashboardSearchFactory">
-        DashboardSearchFactory();
-    </%static:require_module>
-  % endif
+  
   % if redirect_message:
     <%static:require_module module_name="js/views/message_banner" class_name="MessageBannerView">
         var banner = new MessageBannerView({urgency: 'low', type: 'warning'});
@@ -119,115 +115,36 @@ import json
 
     });
 
-  /** SEARCH CONFIGURATION **/
-  function searchHide(objectList, clear){
-    //Should be called per each for hids
-    if(typeof(clear)=='undefined')
-      {
-        $('#courseList li').hide();     //Hide all li and show only the ones with id
-        for(l=0; l<objectList.length; l++)
-          {
-            $('#'+objectList[l].id).show();
-          }        
-
-      }else{
-        $('#courseList li').show()
-      }    
-  }
-
-  function filteringStrings(wordBlock, fixCat){
-    if ((typeof(fixCat) =='undefined') || (fixCat=='')) {
-        fixCat='all';
-    }
-    return function(element){
-      /*Should return a true statement*/      
-    
-      /*element is an object*/
-      trueVal1 = element['course_staff_short'].indexOf(wordBlock) > -1;
-      trueVal2 = element['description'].indexOf(wordBlock) > -1;
-      trueVal3 = element['id'].indexOf(wordBlock) > -1;
-      trueVal4 = element['number'].indexOf(wordBlock) > -1;
-      trueVal5 = element['org'].indexOf(wordBlock) > -1;
-      trueVal6 = element['requirements'].indexOf(wordBlock) > -1;
-      trueVal7 = element['short_description'].indexOf(wordBlock) > -1;
-      trueVal8 = element['title'].indexOf(wordBlock) > -1;
-      if(fixCat == 'all'){
-        return (trueVal1 || trueVal2 || trueVal3 || trueVal4 || trueVal5 || trueVal6 || trueVal7 || trueVal8 );
-      }
-      if(fixCat == 'description'){
-        return (trueVal1 || trueVal2 || trueVal6 || trueVal7 || trueVal8 );
-      }
-      if(fixCat == 'category'){
-        return (trueVal8 || trueVal3 || trueVal4 || trueVal5 || trueVal6  );
-      }
-      if(fixCat == 'author'){
-        return (trueVal1 || trueVal5);
-      }
-
-    }
-  }
-
-  function searchInput(searchCat, overrideS){
-    if(searchFlag == false || typeof(overrideS) == 'string'){
-      //Stop OverQueu with searchFlag
-      searchFlag = true;
-
-      if(overrideS == 'clear'){
-          var term = '';
-          var terms = '';
-      }else{
-        var term = $('input#dash-Search').val();
-        term= term.toLowerCase();
-        var terms = term.split(" ");
-      }
-      if((typeof(searchCat) == 'undefined') ||searchCat == '' || searchCat == 'all')
-        {
-          var searchCat = 'all';
-        }
-      //On Terms use a loop function
-      setTimeout(function(){
-          /* VERIFY THAT FOR EVERY SEARCH THE LOADING TIME IS MINIMUM */
-          //use deepCopy function for more than one term for better manipulation
-          filtered = deepCopy(courseRegistry); 
-          if(terms.length > 1)
-          {  
-          for(j=0; j<terms.length; j++)
-            {     
-              //Multi word search, unordered
-              filtered = filtered.filter(filteringStrings(terms[j], searchCat));
-            }
-          }else{
-          /* VERIFY THAT FOR EVERY SEARCH THE LOADING TIME IS MINIMUM */
-            filtered = courseRegistry.filter(filteringStrings(term, searchCat));
-          }
-          //if(jQuery){console.log('jQuery can be called');}
-          searchHide(filtered, overrideS);
-
-          searchFlag = false;
-        }, 250);
-    }
-    return false;
-  }
-  /*** SEARCH LISTENER ***/
-  $(document.body).on("keyup", 'input#dash-Search', function(){
-    if(($('input#dash-Search').val().length)>1){
-      $('#formIcons').hide();
-      searchInput(searchCat);  
-    }else{
-      searchInput(searchCat, 'clear');  
-      $('#formIcons').show();
-    }
-  });
   function dropSelect(){
     $('#dropSelect').toggle();
     };
   function setCat(categoryS){
     searchCat = categoryS;
-    searchInput(searchCat);  
     $('#setCatText').text(categoryS.toUpperCase());
-    dropSelect();
+    $('#criteria').val(categoryS.toLowerCase());
   }
 
+
+  // To get param by name
+  function getParameterByName(name, url) {
+      if (!url) url = window.location.href;
+      name = name.replace(/[\[\]]/g, "\\$&");
+      var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+          results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, " "));
+  }
+
+  $(document).ready(function(){
+    // To show the last selected criteria and search query: Naresh
+    current_search_query = getParameterByName('search_query');
+    $("#dash-Search").val(current_search_query);
+    current_criteria = getParameterByName('criteria')
+    if(current_criteria) {
+      setCat(current_criteria);
+    }
+  });
 
   </script>
 </%block>
@@ -252,7 +169,7 @@ import json
 <div id="wrapper" class="container-fluid">
   <div class="col-xs-12">
     <div class="col-sm-12">
-      <div class="filter-wrapper padding-30">
+      <div class="filter-wrapper">
           <div class="row">
             <ul class="list-inline col-sm-7 padding-5 ">
                 <li class="hidden-xs">Sort By:</li>
@@ -265,7 +182,11 @@ import json
            <div class="col-sm-5 padding-5">
               <div id="search" class="input-group">
                   <span class="form-control-feedback" id="formIcons"><img src="/static/themes/edx-theme/images/search-icon.png">Search</span>
-                  <input id="dash-Search" type="text" class="form-control" aria-label="...">
+                  <form method="get" action="/dashboard">
+                  <input id="dash-Search" name="search_query" type="text" class="form-control" aria-label="...">
+                  <input id="criteria" name="criteria" type="hidden" value="all" />
+                  <input type="submit" style="position: absolute; left: -9999px"/>
+                  </form>
                   <div class="input-group-btn">
                     <button type="button" class="btn btn-default dropdown-toggle" onclick="dropSelect()">
                       <span class="" id="setCatText">ALL</span> <span class="caret"></span>
@@ -468,3 +389,55 @@ import json
     </form>
   </div>
 </section>
+
+<section id="activity-modal" class="modal unenroll-modal" aria-hidden="true">
+  <div class="inner-wrapper" role="dialog" aria-labelledby="unenrollment-modal-title">
+    <header>
+      <h3 id="unenrollment-modal-title">
+        <span id='track-info'></span>
+        <span id='refund-info'></span>
+        <span class="sr">,
+          ## Translators: this text gives status on if the modal interface (a menu or piece of UI that takes the full focus of the screen) is open or not
+          ${_("window open")}
+        </span>
+      </h3>
+      <hr/>
+    </header>
+    <div id="unenroll_error" class="modal-form-error"></div>
+    <form id="unenroll_form" method="post" data-remote="true" action="${reverse('change_enrollment')}" style="margin: 0 auto; width:197px;">
+      <input name="course_id" id="unenroll_course_id2" type="hidden" />
+      <input name="enrollment_action" type="hidden" value="unenroll" />
+      <div class="submit" style="height:20px;">
+        <input name="submit" type="submit" value="${_("Remove")}" class="submitModal" style="display: table-cell; margin-right: 10px; position: relative; float: left; height:37px;"/>
+        <button class="close-modal" style="" id="modalCancel">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    $(".delete_activity").click(function(e){
+      e.preventDefault();
+      activity_name = $(this).closest("li").find(".course-title").text();
+      if (window.confirm("Unsubscribe from "+$.trim(activity_name)+"?")) {
+        remove_element = $(this).closest("li");
+        data_usage_key = $(this).closest("li").attr("data-usage-key");
+        username = "${request.user}";
+        url = "http://${request.META['HTTP_HOST']}/api/bookmarks/v1/bookmarks/"+username+","+data_usage_key;
+        $.ajax({
+          url: url,
+          type: "DELETE",
+          success: function(data) {
+            remove_element.remove();
+          },
+          error: function(data) {
+            console.log("error in remove subscription of activity");
+          },
+        });
+      }
+    });
+  });
+</script>

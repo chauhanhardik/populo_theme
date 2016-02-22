@@ -18147,13 +18147,13 @@ body .content-wrapper,
 }
 @media (min-width: 992px) {
   .content-wrapper > .home > header .outer-wrapper .title {
-    float: left;
+    margin: 0 auto;
     width: 66.66666667%;
   }
 }
 @media (min-width: 1200px) {
   .content-wrapper > .home > header .outer-wrapper .title {
-    float: left;
+    margin: 0 auto;
     width: 66.66666667%;
   }
 }
@@ -21151,6 +21151,7 @@ fieldset[disabled] .content-wrapper > .dashboard .find-courses .listing-courses 
   padding-bottom: 0;
   margin-top: 30px;
   background: none;
+  margin-bottom: 100px;
 }
 .content-wrapper > .register > .navbar-header,
 .content-wrapper > .register > .navbar-collapse {
@@ -27439,3 +27440,9 @@ body.view-incourse .content-wrapper > .book-wrapper > .book {
   }
 }
 /*# sourceMappingURL=main.css.map */
+
+/*This lines added by Hardik Chauhan*/
+.course-search label{display: block;}
+.home>header .title .course-search .search-button{right: 0 !important;}
+/*disable none for edx default course tag on search*/
+#filter-bar{display: none;}

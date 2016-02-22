@@ -572,3 +572,48 @@ button.tip.higher:hover span, a.tip.higher:hover span {
   border: none !important;
   box-shadow: none !important;
 }
+
+.view-register .container, .view-register section.outside-app, .view-register .wrapper-account-settings, .view-register .view-profile .profile-self .wrapper-profile-field-account-privacy .u-field-account_privacy, .view-profile .profile-self .wrapper-profile-field-account-privacy .view-register .u-field-account_privacy, .view-register .view-profile .wrapper-profile-sections, .view-profile .view-register .wrapper-profile-sections, .view-login .container, .view-login section.outside-app, .view-login .wrapper-account-settings, .view-login .view-profile .profile-self .wrapper-profile-field-account-privacy .u-field-account_privacy, .view-profile .profile-self .wrapper-profile-field-account-privacy .view-login .u-field-account_privacy, .view-login .view-profile .wrapper-profile-sections, .view-profile .view-login .wrapper-profile-sections, .view-passwordreset .container, .view-passwordreset section.outside-app, .view-passwordreset .wrapper-account-settings, .view-passwordreset .view-profile .profile-self .wrapper-profile-field-account-privacy .u-field-account_privacy, .view-profile .profile-self .wrapper-profile-field-account-privacy .view-passwordreset .u-field-account_privacy, .view-passwordreset .view-profile .wrapper-profile-sections, .view-profile .view-passwordreset .wrapper-profile-sections, .view-register .introduction, .view-login .introduction, .view-passwordreset .introduction{ width:100%; }
+
+.view-passwordreset .introduction header{ background: none !important; height:60px !important; border: none !important;}
+
+.view-register .introduction header .title, .view-login .introduction header .title, .view-passwordreset .introduction header .title{text-align: center !important; width: 88% !important; margin: 0; padding: 0; }
+
+.login .content, .register .content, .passwordreset .content, #forgot-password-modal #password-reset .content{ margin-right: 0 !important; width: 640px !important; } 
+
+.view-register .introduction header .title .title-super, .view-login .introduction header .title .title-super, .view-passwordreset .introduction header .title .title-super{ text-transform: capitalize; color: #333; font-weight: 400; }
+
+.view-register .introduction header .title:hover, .view-login .introduction header .title:hover, .view-passwordreset .introduction header .title:hover{ box-shadow:none;}
+
+.view-register .introduction header .title:focus, .view-login .introduction header .title:focus, .view-passwordreset .introduction header .title:focus{ outline:none;}
+
+footer.global.navbar.navbar-default{width:100%;}
+.login-wrapper .form-f-wrapper .row.aLinks .col-sm-6{padding:0 !important;}
+
+body #forgot-password-modal #password-reset header h2, .view-login #forgot-password-modal #password-reset header h2, .view-register #forgot-password-modal #password-reset header h2, .view-passwordreset #forgot-password-modal #password-reset header h2{color:#333 !important; font-weight:bold !important;}
+
+.course-title p.course {
+    height: 15px;
+    width: 15px !important;
+    background-color: #1db4b3 !important;
+    float: left;
+    margin-top: 4px;
+    border-radius: 100% !important;
+    margin-right: 5px;
+    border: none !important;
+    box-shadow: none !important;
+    margin-bottom: 0 !important;
+}
+
+.course-title p.activity {
+    height: 15px;
+    width: 15px;
+    background-color: #5F6D70;
+    float: left;
+    margin-top: 4px;
+    border-radius: 100%;
+    margin-right: 5px;
+    border: none !important;
+    box-shadow: none !important;
+    margin-bottom: 0 !important;
+}

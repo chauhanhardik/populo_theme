@@ -25,6 +25,7 @@ from student.helpers import (
 
 from student.models import CourseEnrollment
 from django.db.models import Count
+from django.contrib.auth.models import User
 
 def find_rev(str,target,start):
     str = str[::-1]
@@ -174,8 +175,18 @@ def convert_line_endings(temp, mode):
   from openedx.core.djangoapps.user_api.accounts.image_helpers import get_profile_image_urls_for_user
   users = CourseInstructorRole(course.id).users_with_role()
   instructors = [instructor for instructor in users]
-  author_name = instructor.profile.name if instructor.profile.name else instructor.username 
-  author_image_url = get_profile_image_urls_for_user(instructors[0])['medium']
+  author_name = ""
+  author_image_url = ""
+  try:
+    if instructors[0].profile.name:
+      author_name = instructors[0].profile.name 
+    else:
+      author_name = instructors[0].username 
+    author_image_url = get_profile_image_urls_for_user(instructors[0])['medium']
+  except:
+    user_staff = User.objects.filter(is_staff=1)[0]
+    author_name = str(user_staff.profile.name) if user_staff.profile.name else str(user_staff.username)
+    author_image_url = get_profile_image_urls_for_user(user_staff)['medium']
 %>
 
 <%

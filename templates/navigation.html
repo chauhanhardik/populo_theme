@@ -152,7 +152,7 @@ $(document).ready(function () {
                   </li> 
                   % if GlobalStaff().has_user(user):
                   <li>
-                      <a href="${justIp(("{cms_base}").format(cms_base=settings.CMS_BASE))}:18010/home">
+                      <a href="${settings.CMS_BASE}">
                       <img src="/static/themes/edx-theme/images/designer-icon-blue.svg" width="35" height="35" />${_("Activity Designer").format(platform_name=settings.PLATFORM_NAME)}
                       </a>
                   </li>      

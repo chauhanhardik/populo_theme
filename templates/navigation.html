@@ -17,6 +17,7 @@ from branding import api as branding
 from status.status import get_site_status_msg
 import ast
 from notifications.views import live_unread_notification_count
+from openedx.core.djangoapps.user_api.accounts.image_helpers import get_profile_image_urls_for_user
 
 def justIp(dns):
     sl1 = dns.find('ec2-', 0)
@@ -72,40 +73,6 @@ PLACEHOLDER_USERNAME = '__PLACEHOLDER_USERNAME'
 %>
 
 <script type="text/javascript">
-% if request.user.is_authenticated():
-$(function() {
-    var username2 = "${user.username}";
-    //console.log("Username is: ", "${user.username}");
-    var form = $(".manage-accounts-form"),
-        profileUrl = "${reverse('accounts_api', kwargs={'username': PLACEHOLDER_USERNAME})}",
-        menuProfile;
-        //console.log("Auth Headers: ",profileUrl);
-        var ajaxCalled = $.ajax({
-            type: "GET",
-            url: profileUrl.replace('${PLACEHOLDER_USERNAME}', username2),
-            success: function(response) {
-                var imageUrl = response["profile_image"]["image_url_medium"];
-                // console.log('Image Url response: ', imageUrl);
-            }
-        });
-        //console.log('AJAX: ', ajaxCalled);
-
-    menuProfile = function(username) {
-        return $.ajax({
-            type: "GET",
-            url: profileUrl.replace('${PLACEHOLDER_USERNAME}', username2),
-            success: function(response) {
-                var imageUrl = response["profile_image"]["image_url_medium"];
-             
-                //console.log('Image Url response: ', imageUrl);
-                $('#imageMain').attr("src", imageUrl);
-            }
-        });
-    };
-    menuProfile(username2);
-});
-%endif
-
 
 $(document).ready(function () {
   // Due to confliction rewrite this for navigation ddl in header
@@ -188,7 +155,7 @@ $(document).ready(function () {
         <nav class="hidden-xs pull-right" style="padding-top: 0px;">
           <a id="profile-menu" style="display:table;" class="tip higher">
             <div class="tile-avatar">
-              <img id="imageMain" src="http://54.229.116.227/static/images/default-theme/default-profile_50.5fb006f96a15.png" />
+              <img id="imageMain" src="${get_profile_image_urls_for_user(request.user)['medium']}" />
     
             </div>
             <div id="userMenu">

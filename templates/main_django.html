@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-{% load compressed %}
 {% load sekizai_tags i18n microsite %}
 {% load url from future %}
 {% load staticfiles %}
@@ -15,13 +14,13 @@
 <script src="${static.url('themes/{theme_name}/js/d3.js'.format(theme_name=settings.THEME_NAME))}" ></script>
 <script src="${static.url('themes/{theme_name}/js/bundle.js'.format(theme_name=settings.THEME_NAME))}" ></script>
 
-  {% compressed_css 'style-vendor' %}
-  {% compressed_css 'style-main' %}
-  {% compressed_css 'style-course-vendor' %}
-  {% compressed_css 'style-course' %}
+  {% stylesheet 'style-vendor' %}
+  {% stylesheet 'style-main' %}
+  {% stylesheet 'style-course-vendor' %}
+  {% stylesheet 'style-course' %}
 
   {% block main_vendor_js %}
-  {% compressed_js 'main_vendor' %}
+  {% javascript 'main_vendor' %}
   {% endblock %}
   {% block headextra %}{% endblock %}
   {% render_block "css" %}
@@ -44,8 +43,8 @@
     {% include "footer.html" %}
   </div>
 
-  {% compressed_js 'application' %}
-  {% compressed_js 'module-js' %}
+  {% javascript 'application' %}
+  {% javascript 'module-js' %}
 
   {% render_block "js" %}
 </body>
